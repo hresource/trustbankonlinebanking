@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SunTrust Online Banking - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+        }
+
+        .background img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.2;
+        }
+
+        .background-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(88, 28, 135, 0.9), rgba(107, 33, 168, 0.9), rgba(67, 56, 202, 0.9));
+        }
+
+        .content {
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            background: rgba(107, 33, 168, 0.5);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(147, 51, 234, 0.3);
+        }
+
+        .header-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .nav {
+            display: none;
+            gap: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .nav {
+                display: flex;
+            }
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav a:hover {
+            color: #c4b5fd;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-btn:hover {
+            color: #c4b5fd;
+        }
+
+        .download-btn {
+            background: #10b981;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .download-btn:hover {
+            background: #059669;
+        }
+
+        .main-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        @media (min-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .account-number {
+            font-size: 0.875rem;
+            color: #c4b5fd;
+        }
+
+        .balance-card {
+            background: linear-gradient(45deg, #7c3aed, #4338ca);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .balance-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .balance-label {
+            color: #c4b5fd;
+            font-size: 0.875rem;
+        }
+
+        .balance-amount {
+            font-size: 2.25rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .account-type {
+            color: #c4b5fd;
+            font-size: 0.875rem;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .quick-actions {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            transition: background-color 0.3s;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .action-btn span {
+            display: block;
+            color: white;
+            font-size: 0.875rem;
+            margin-top: 8px;
+        }
+
+        .transactions {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .transactions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 384px;
+            overflow-y: auto;
+        }
+
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+
+        .transaction-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .transaction-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .transaction-icon {
+            border-radius: 50%;
+            padding: 8px;
+            color: white;
+        }
+
+        .transaction-icon.deposit {
+            background: #10b981;
+        }
+
+        .transaction-icon.transfer {
+            background: #3b82f6;
+        }
+
+        .transaction-details h4 {
+            color: white;
+            font-weight: 500;
+        }
+
+        .transaction-meta {
+            color: #c4b5fd;
+            font-size: 0.875rem;
+        }
+
+        .transaction-account {
+            color: #d8b4fe;
+            font-size: 0.75rem;
+        }
+
+        .transaction-right {
+            text-align: right;
+        }
+
+        .transaction-amount {
+            font-weight: 600;
+        }
+
+        .transaction-amount.positive {
+            color: #34d399;
+        }
+
+        .transaction-amount.negative {
+            color: #f87171;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .services-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .service-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+
+        .service-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .service-item span {
+            color: white;
+        }
+
+        .summary-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .summary-row span:first-child {
+            color: #c4b5fd;
+        }
+
+        .summary-row span:last-child {
+            color: white;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 50;
+        }
+
+        .modal {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 24px;
+            width: 100%;
+            max-width: 448px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #c4b5fd;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-group input::placeholder {
+            color: rgba(209, 213, 219, 1);
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            color: #fca5a5;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            margin-bottom: 16px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-primary {
+            background: #7c3aed;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #6d28d9;
+        }
+
+        .btn-primary:disabled {
+            background: #6b21a8;
+            opacity: 0.8;
+            cursor: not-allowed;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .otp-input {
+            text-align: center;
+            font-size: 1.5rem;
+            letter-spacing: 0.25em;
+            padding-right: 48px;
+        }
+
+        .transfer-summary {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .transfer-card {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .transfer-amount {
+            color: white;
+            font-size: 1.125rem;
+        }
+
+        .transfer-recipient {
+            color: #c4b5fd;
+            font-size: 0.875rem;
+        }
+
+        .success-icon {
+            background: #10b981;
+            border-radius: 50%;
+            width: 64px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 2rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="background">
+        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80" alt="Banking background">
+        <div class="background-overlay"></div>
+    </div>
+
+    <div class="content">
+        <header class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="logo">SunTrust</div>
+                    <nav class="nav">
+                        <a href="#">Accounts</a>
+                        <a href="#">Transfer</a>
+                        <a href="#">Pay Bills</a>
+                        <a href="#">Services</a>
+                    </nav>
+                </div>                
+                    <div class="header-btn">
+                        <span>👤</span>
+                        <span>David Mark</span>
+                    </div>
+                    <button class="header-btn" onclick="window.location.href = 'login.html'">🚪</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="dashboard-grid">
+                <div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Account Overview</h2>
+                            <span class="account-number">Account: ****4472</span>
+                        </div>
+
+                        <div class="balance-card">
+                            <div class="balance-header">
+                                <span class="balance-label">Available Balance</span>
+                                <span>💳</span>
+                            </div>
+                            <div class="balance-amount" id="balance">$579,000</div>
+                            <div class="account-type">SunTrust Checking Account</div>
+                        </div>
+
+                        <div class="quick-actions">
+                            <button class="action-btn" onclick="showTransferModal()">
+                                <span>📤</span>
+                                <span>Transfer</span>
+                            </button>
+                            <button class="action-btn">
+                                <span>➕</span>
+                                <span>Deposit</span>
+                            </button>
+                            <button class="action-btn">
+                                <span>📱</span>
+                                <span>Pay Bills</span>
+                            </button>
+                            <button class="action-btn">
+                                <span>🏢</span>
+                                <span>ATM/Branch</span>
+                            </button>
+                        </div>
+
+                        <div class="transactions">
+                            <h3 class="card-title" style="margin-bottom: 16px;">Recent Transactions</h3>
+                            <div class="transactions-list" id="transactionsList">
+                                <div class="transaction-item">
+                                    <div class="transaction-left">
+                                        <div class="transaction-icon deposit">📥</div>
+                                        <div class="transaction-details">
+                                            <h4>Direct Deposit</h4>
+                                            <div class="transaction-meta">2025-08-08 • 09:30 AM</div>
+                                        </div>
+                                    </div>
+                                    <div class="transaction-right">
+                                        <div class="transaction-amount positive">+$575,000</div>
+                                        <div class="transaction-status">completed</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar">
+                    <div class="card">
+                        <h3 class="card-title" style="margin-bottom: 16px;">Banking Services</h3>
+                        <div class="services-list">
+                            <a href="#" class="service-item">
+                                <span>🏦</span>
+                                <span>Savings Account</span>
+                            </a>
+                            <a href="#" class="service-item">
+                                <span>💳</span>
+                                <span>Credit Cards</span>
+                            </a>
+                            <a href="#" class="service-item">
+                                <span>🏢</span>
+                                <span>Loans</span>
+                            </a>
+                            <a href="#" class="service-item">
+                                <span>⚙️</span>
+                                <span>Account Settings</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title" style="margin-bottom: 16px;">Account Summary</h3>
+                        <div class="summary-grid">
+                            <div class="summary-row">
+                                <span>Account Type</span>
+                                <span>Checking</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Account Number</span>
+                                <span>****4472</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Routing Number</span>
+                                <span>061000104</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Last Login</span>
+                                <span>Today</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Transfer Modal -->
+    <div id="transferModal" class="modal-overlay hidden">
+        <div class="modal">
+            <!-- Step 1: Transfer Details -->
+            <div id="step1">
+                <div class="modal-header">
+                    <h3 class="modal-title">Transfer Money</h3>
+                    <button class="close-btn" onclick="closeTransferModal()">×</button>
+                </div>
+                
+                <div id="transferError" class="error-message hidden"></div>
+                
+                <div class="form-group">
+                    <label for="amount">Amount</label>
+                    <input type="number" id="amount" placeholder="0.00">
+                </div>
+                
+                <div class="form-group">
+                    <label for="recipient">Recipient Name</label>
+                    <input type="text" id="recipient" placeholder="Enter recipient name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="accountNumber">Account Number</label>
+                    <input type="text" id="accountNumber" placeholder="Enter account number">
+                </div>
+                
+                <div class="form-group">
+                    <label for="routingNumber">Routing Number</label>
+                    <input type="text" id="routingNumber" placeholder="Enter routing number">
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="closeTransferModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="nextStep()">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 2: OTP Verification -->
+            <div id="step2" class="hidden">
+                <div class="modal-header">
+                    <h3 class="modal-title">Verify Transfer</h3>
+                    <button class="close-btn" onclick="closeTransferModal()">×</button>
+                </div>
+                
+                <div class="transfer-summary">
+                    <div class="transfer-card">
+                        <div class="transfer-amount" id="transferAmount"></div>
+                        <div class="transfer-recipient" id="transferRecipient"></div>
+                    </div>
+                    <p style="color: #c4b5fd; font-size: 0.875rem;">Please enter the OTP sent to your registered mobile number</p>
+                </div>
+                
+                <div id="otpError" class="error-message hidden"></div>
+                
+                <div class="form-group">
+                    <label for="otp">Enter OTP</label>
+                    <input type="text" id="otp" class="otp-input" placeholder="0000" maxlength="4">
+                </div>
+                
+                <button class="btn btn-primary" id="confirmBtn" onclick="confirmTransfer()" style="width: 100%;">
+                    Confirm Transfer
+                </button>
+            </div>
+
+            <!-- Step 3: Success -->
+            <div id="step3" class="hidden">
+                <div style="text-align: center;">
+                    <div class="success-icon">📤</div>
+                    <h3 class="modal-title" style="margin-bottom: 8px;">Transfer Successful!</h3>
+                    <p style="color: #c4b5fd; margin-bottom: 16px;" id="successMessage"></p>
+                    <div style="color: #c4b5fd; font-size: 0.875rem;" id="transactionId"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentBalance = 575000;
+        let transferStep = 1;
+        let isLoading = false;
+        let transactions = [
+            {
+                id: 1,
+                type: "deposit",
+                amount: 575000,
+                description: "Direct Deposit",
+                date: "2025-08-08",
+                time: "09:30 AM",
+                status: "completed"
+            }
+        ];
+
+        function addTransaction(transferData) {
+            const newTransaction = {
+                id: Date.now(),
+                type: "transfer",
+                amount: -transferData.amount,
+                description: 'Transfer to ' + transferData.recipient,
+                date: new Date().toISOString().split('T')[0],
+                time: new Date().toLocaleTimeString('en-US', { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    hour12: true 
+                }),
+                status: "completed",
+                recipient: transferData.recipient,
+                accountNumber: transferData.accountNumber
+            };
+
+            transactions.unshift(newTransaction);
+            updateTransactionsList();
+        }
+
+        function updateTransactionsList() {
+            const transactionsList = document.getElementById('transactionsList');
+            transactionsList.innerHTML = '';
+
+            transactions.forEach(transaction => {
+                const transactionItem = document.createElement('div');
+                transactionItem.className = 'transaction-item';
+                
+                const isPositive = transaction.amount > 0;
+                const iconClass = transaction.type === 'deposit' ? 'deposit' : 'transfer';
+                const icon = transaction.type === 'deposit' ? '📥' : '📤';
+                
+                transactionItem.innerHTML = `
+                    <div class="transaction-left">
+                        <div class="transaction-icon ${iconClass}">${icon}</div>
+                        <div class="transaction-details">
+                            <h4>${transaction.description}</h4>
+                            <div class="transaction-meta">${transaction.date} • ${transaction.time}</div>
+                            ${transaction.recipient ? `<div class="transaction-account">Account: ****${transaction.accountNumber ? transaction.accountNumber.slice(-4) : ''}</div>` : ''}
+                        </div>
+                    </div>
+                    <div class="transaction-right">
+                        <div class="transaction-amount ${isPositive ? 'positive' : 'negative'}">
+                            ${isPositive ? '+' : ''}$${Math.abs(transaction.amount).toLocaleString()}
+                        </div>
+                        <div class="transaction-status">${transaction.status}</div>
+                    </div>
+                `;
+                
+                transactionsList.appendChild(transactionItem);
+            });
+        }
+
+        function showTransferModal() {
+            document.getElementById('transferModal').classList.remove('hidden');
+            transferStep = 1;
+            showStep(1);
+        }
+
+        function closeTransferModal() {
+            document.getElementById('transferModal').classList.add('hidden');
+            clearForm();
+        }
+
+        function clearForm() {
+            document.getElementById('amount').value = '';
+            document.getElementById('recipient').value = '';
+            document.getElementById('accountNumber').value = '';
+            document.getElementById('routingNumber').value = '';
+            document.getElementById('otp').value = '';
+            document.getElementById('transferError').classList.add('hidden');
+            document.getElementById('otpError').classList.add('hidden');
+        }
+
+        function showStep(step) {
+            for (let i = 1; i <= 3; i++) {
+                document.getElementById('step' + i).classList.add('hidden');
+            }
+            document.getElementById('step' + step).classList.remove('hidden');
+        }
+
+        function nextStep() {
+            const amount = document.getElementById('amount').value;
+            const recipient = document.getElementById('recipient').value;
+            const accountNumber = document.getElementById('accountNumber').value;
+            const routingNumber = document.getElementById('routingNumber').value;
+            const errorDiv = document.getElementById('transferError');
+
+            if (!amount || !recipient || !accountNumber || !routingNumber) {
+                errorDiv.textContent = 'Please fill in all fields';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            const transferAmount = parseFloat(amount);
+            if (transferAmount > currentBalance) {
+                errorDiv.textContent = 'Insufficient funds';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            errorDiv.classList.add('hidden');
+            document.getElementById('transferAmount').textContent = 'Transfer $' + transferAmount.toLocaleString();
+            document.getElementById('transferRecipient').textContent = 'to ' + recipient;
+            
+            transferStep = 2;
+            showStep(2);
+        }
+
+        function confirmTransfer() {
+            if (isLoading) return;
+
+            const otp = document.getElementById('otp').value;
+            const otpError = document.getElementById('otpError');
+            const confirmBtn = document.getElementById('confirmBtn');
+
+            if (otp.length !== 4) {
+                return;
+            }
+
+            isLoading = true;
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<div class="spinner"></div>';
+
+            setTimeout(() => {
+                if (otp === '7897') {
+                    const amount = parseFloat(document.getElementById('amount').value);
+                    const recipient = document.getElementById('recipient').value;
+                    const accountNumber = document.getElementById('accountNumber').value;
+                    
+                    currentBalance -= amount;
+                    document.getElementById('balance').textContent = '$' + currentBalance.toLocaleString();
+                    
+                    addTransaction({
+                        amount: amount,
+                        recipient: recipient,
+                        accountNumber: accountNumber
+                    });
+                    
+                    document.getElementById('successMessage').textContent = 
+                        '$' + amount.toLocaleString() + ' has been transferred to ' + recipient;
+                    document.getElementById('transactionId').textContent = 
+                        'Transaction ID: TXN' + Date.now();
+                    
+                    transferStep = 3;
+                    showStep(3);
+                    
+                    setTimeout(() => {
+                        closeTransferModal();
+                    }, 3000);
+                } else {
+                    otpError.textContent = 'Invalid OTP. Please try again.';
+                    otpError.classList.remove('hidden');
+                    document.getElementById('otp').value = '';
+                }
+                
+                isLoading = false;
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = 'Confirm Transfer';
+            }, 1000);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('transferModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeTransferModal();
+            }
+        });
+
+        // Initialize transactions list on page load
+        updateTransactionsList();
+    </script>
+</body>
+</html>
