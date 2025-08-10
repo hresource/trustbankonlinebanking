@@ -560,6 +560,66 @@
             display: none;
         }
     </style>
+	
+	<style>
+    /* ===== Extra Mobile Responsiveness ===== */
+    @media (max-width: 767px) {
+        .header-content {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .header-left {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        /* Mobile nav menu */
+        .nav {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            gap: 12px;
+        }
+
+        .nav.show {
+            display: flex;
+        }
+
+        /* Grid stacks */
+        .dashboard-grid {
+            grid-template-columns: 1fr !important;
+        }
+
+        /* Reduce padding */
+        .main-content {
+            padding: 16px;
+        }
+
+        /* Make buttons and inputs larger for touch */
+        .btn, .action-btn, .form-group input {
+            font-size: 1rem;
+            padding: 14px;
+        }
+    }
+
+    /* Handle very small phones */
+    @media (max-width: 480px) {
+        .balance-amount {
+            font-size: 1.5rem;
+        }
+
+        .quick-actions {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .transactions-list {
+            max-height: 300px;
+        }
+    }
+</style>
+
 </head>
 <body>
     <div class="background">
@@ -637,7 +697,7 @@
                                         </div>
                                     </div>
                                     <div class="transaction-right">
-                                        <div class="transaction-amount positive">+$575,000</div>
+                                        <div class="transaction-amount positive">+$579,000</div>
                                         <div class="transaction-status">completed</div>
                                     </div>
                                 </div>
@@ -960,6 +1020,14 @@
 
         // Initialize transactions list on page load
         updateTransactionsList();
+		
+		// Mobile nav toggle without removing existing elements
+const nav = document.querySelector('.nav');
+const logo = document.querySelector('.logo'); // Click on "SunTrust" text to toggle nav
+logo.style.cursor = 'pointer';
+logo.addEventListener('click', () => {
+    nav.classList.toggle('show');
+});
     </script>
 </body>
 </html>
